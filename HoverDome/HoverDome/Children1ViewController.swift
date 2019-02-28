@@ -73,6 +73,5 @@ extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
                                         object: self,
                                         userInfo: [HoverPageViewController.OffsetKey: scrollView.contentOffset])
         offsetY = scrollView.contentOffset.y
-        print(offsetY)
     }
 }

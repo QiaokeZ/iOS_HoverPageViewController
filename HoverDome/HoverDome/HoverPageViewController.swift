@@ -22,7 +22,7 @@ class HoverContainerViewController: UIViewController {
 }
 
 protocol HoverPageViewControllerDelegate: NSObjectProtocol {
-    func hoverPageViewController(_ viewController: HoverPageViewController,  scrollViewDidScroll:UIScrollView)
+    func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll scrollView: UIScrollView)
 }
 
 final class HoverPageViewController: UIViewController {
@@ -30,11 +30,11 @@ final class HoverPageViewController: UIViewController {
     static let HoverPageViewOffsetChange = "HoverPageViewOffsetChange"
     static let OffsetKey = "OffsetKey"
 
-    weak var delegate:HoverPageViewControllerDelegate?
+    weak var delegate: HoverPageViewControllerDelegate?
+    
     private(set) var viewControllers = [HoverContainerViewController]()
     private(set) var headerView: UIView!
     private(set) var pageTitleView: UIView!
-
     private var offset: CGPoint = .zero
     private var scrollView: UIScrollView!
 
@@ -118,7 +118,7 @@ extension HoverPageViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         selectedIndex = Int(scrollView.contentOffset.x / scrollView.frame.width + 0.5) % viewControllers.count
     }
-    
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         delegate?.hoverPageViewController(self, scrollViewDidScroll: scrollView)
         for child in viewControllers {

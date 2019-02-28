@@ -1,6 +1,6 @@
 # HoverPageViewController
 
- ![image](https://github.com/iOS_HoverPageViewController/HoverDome/HoverDome/Feb-28-2019 15-16-06.gif)
+ ![image](https://github.com/iOS_HoverPageViewController/HoverDome/HoverDome/hover.gif)
 
 ### 主控制器
 ```swift

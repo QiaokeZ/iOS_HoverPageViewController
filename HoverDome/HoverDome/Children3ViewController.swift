@@ -37,6 +37,7 @@ class Children3ViewController: HoverContainerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        offsetY = -ViewController.headerViewHeight
         view.backgroundColor = UIColor.yellow
         view.addSubview(collectionView)
     }
@@ -49,7 +50,9 @@ class Children3ViewController: HoverContainerViewController {
 
     override var isStopScroll: Bool {
         didSet {
-            collectionView.setContentOffset(CGPoint(x: 0, y: collectionView.contentOffset.y), animated: false)
+            if isStopScroll == true{
+                collectionView.setContentOffset(CGPoint(x: 0, y: collectionView.contentOffset.y), animated: false)
+            }
         }
     }
 }

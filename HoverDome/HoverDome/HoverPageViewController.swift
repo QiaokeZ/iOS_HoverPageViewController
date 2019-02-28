@@ -41,9 +41,7 @@ final class HoverPageViewController: UIViewController {
     var selectedIndex: Int = 0 {
         willSet {
             if newValue != selectedIndex {
-                for child in viewControllers {
-                    child.isStopScroll = true
-                }
+                viewControllers[selectedIndex].isStopScroll = true
                 scrollView.setContentOffset(CGPoint(x: CGFloat(newValue) * view.frame.width, y: 0), animated: true)
             }
         }

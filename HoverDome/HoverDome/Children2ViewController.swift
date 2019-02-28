@@ -32,6 +32,7 @@ class Children2ViewController: HoverContainerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        offsetY = -ViewController.headerViewHeight
         view.backgroundColor = UIColor.green
         view.addSubview(tableView)
     }
@@ -44,7 +45,9 @@ class Children2ViewController: HoverContainerViewController {
 
     override var isStopScroll: Bool {
         didSet {
-            tableView.setContentOffset(CGPoint(x: 0, y:  tableView.contentOffset.y), animated: false)
+            if isStopScroll == true{
+                tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentOffset.y), animated: false)
+            }
         }
     }
 }

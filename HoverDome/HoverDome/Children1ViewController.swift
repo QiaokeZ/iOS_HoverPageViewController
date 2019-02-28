@@ -33,9 +33,9 @@ class Children1ViewController: HoverContainerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        offsetY = -ViewController.headerViewHeight
         view.backgroundColor = UIColor.green
         view.addSubview(tableView)
-
     }
 
     override var offsetY: CGFloat {
@@ -46,7 +46,9 @@ class Children1ViewController: HoverContainerViewController {
 
     override var isStopScroll: Bool {
         didSet {
-            tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentOffset.y), animated: false)
+            if isStopScroll == true{
+                tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentOffset.y), animated: false)
+            }
         }
     }
 }
@@ -71,5 +73,6 @@ extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
                                         object: self,
                                         userInfo: [HoverPageViewController.OffsetKey: scrollView.contentOffset])
         offsetY = scrollView.contentOffset.y
+        print(offsetY)
     }
 }

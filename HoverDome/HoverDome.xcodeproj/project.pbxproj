@@ -16,7 +16,7 @@
 		846C4CEB22263E35008C6AC1 /* Children2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846C4CEA22263E35008C6AC1 /* Children2ViewController.swift */; };
 		846C4CED22263E3F008C6AC1 /* Children3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846C4CEC22263E3F008C6AC1 /* Children3ViewController.swift */; };
 		846C4CF1222775FA008C6AC1 /* HoverPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846C4CF0222775FA008C6AC1 /* HoverPageViewController.swift */; };
-		846C4CF72227C5AA008C6AC1 /* hover.gif in Resources */ = {isa = PBXBuildFile; fileRef = 846C4CF62227C5AA008C6AC1 /* hover.gif */; };
+		846C4CF92227C6F1008C6AC1 /* hover.gif in Resources */ = {isa = PBXBuildFile; fileRef = 846C4CF82227C6F1008C6AC1 /* hover.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +31,7 @@
 		846C4CEA22263E35008C6AC1 /* Children2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Children2ViewController.swift; sourceTree = "<group>"; };
 		846C4CEC22263E3F008C6AC1 /* Children3ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Children3ViewController.swift; sourceTree = "<group>"; };
 		846C4CF0222775FA008C6AC1 /* HoverPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverPageViewController.swift; sourceTree = "<group>"; };
-		846C4CF62227C5AA008C6AC1 /* hover.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = hover.gif; sourceTree = "<group>"; };
+		846C4CF82227C6F1008C6AC1 /* hover.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = hover.gif; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +64,7 @@
 		846C4CD522263DE4008C6AC1 /* HoverDome */ = {
 			isa = PBXGroup;
 			children = (
-				846C4CF62227C5AA008C6AC1 /* hover.gif */,
+				846C4CF82227C6F1008C6AC1 /* hover.gif */,
 				846C4CD822263DE4008C6AC1 /* ViewController.swift */,
 				846C4CE822263E27008C6AC1 /* Children1ViewController.swift */,
 				846C4CEA22263E35008C6AC1 /* Children2ViewController.swift */,
@@ -138,7 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				846C4CE122263DEC008C6AC1 /* LaunchScreen.storyboard in Resources */,
-				846C4CF72227C5AA008C6AC1 /* hover.gif in Resources */,
+				846C4CF92227C6F1008C6AC1 /* hover.gif in Resources */,
 				846C4CDE22263DEC008C6AC1 /* Assets.xcassets in Resources */,
 				846C4CDC22263DE4008C6AC1 /* Main.storyboard in Resources */,
 			);

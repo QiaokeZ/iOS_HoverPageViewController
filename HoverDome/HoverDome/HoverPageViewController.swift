@@ -2,7 +2,7 @@
 //  HoverPageViewController.swift
 //  HoverPageViewController <https://github.com/QiaokeZ/iOS_HoverPageViewController>
 //
-//  Created by admin on 2019/1/18.
+//  Created by admin on 2019/2/27
 //  Copyright © 2019 zhouqiao. All rights reserved.
 //
 //  This source code is licensed under the MIT-style license found in the

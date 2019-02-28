@@ -73,6 +73,7 @@ extension ViewController {
         viewControllers.append(vc2)
         viewControllers.append(vc3)
         
+        /// 添加分页控制器
         hoverPageViewController = HoverPageViewController(viewControllers: viewControllers, headerView: headerView, pageTitleView: pageTitleView)
         hoverPageViewController.delegate = self
         addChild(hoverPageViewController)
@@ -89,7 +90,6 @@ extension ViewController:HoverPageViewControllerDelegate{
     func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll: UIScrollView) {
         let progress = scrollViewDidScroll.contentOffset.x / scrollViewDidScroll.frame.width
         indicator.frame.origin.x = ((indicator.frame.width + (indicatorMargin * 2)) * progress) + indicatorMargin
-        print(progress)
     }
 }
 

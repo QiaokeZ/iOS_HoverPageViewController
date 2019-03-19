@@ -7,10 +7,6 @@
 ### 主控制器
 ```swift
 class ViewController: UIViewController {
-
-    /// 可根据业务需求更改
-    static let headerViewHeight: CGFloat = 200
-    static let pageTitleViewHeight: CGFloat = 40
     
     var hoverPageViewController:HoverPageViewController!
     let indicator = UIView()
@@ -18,8 +14,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        navigationController?.navigationBar.isTranslucent = false
         view.backgroundColor = UIColor.white
         title = "悬停"
         prepareView()
@@ -30,14 +24,15 @@ extension ViewController {
 
     private func prepareView() {
         let headerView = UILabel()
-        headerView.frame.size = CGSize(width: view.frame.width, height: ViewController.headerViewHeight)
+        headerView.frame.size = CGSize(width: view.frame.width, height: 200)
         headerView.backgroundColor = UIColor.red
-        headerView.text = "我是头部"
+        headerView.text = "可上下滑动头部"
+        headerView.textColor = UIColor.white
         headerView.textAlignment = .center
         
         /// 指示器
         let pageTitleView = UIView()
-        pageTitleView.frame.size = CGSize(width: view.frame.width, height: ViewController.pageTitleViewHeight)
+        pageTitleView.frame.size = CGSize(width: view.frame.width, height: 40)
 
         /// 添加3个按钮
         let buttonSize = CGSize(width: view.frame.width / 3, height: pageTitleView.frame.height)
@@ -63,7 +58,7 @@ extension ViewController {
         pageTitleView.addSubview(indicator)
         
         /// 添加子控制器
-        var viewControllers = [HoverContainerViewController]()
+        var viewControllers = [HoverChildViewController]()
         let vc1 = Children1ViewController()
         let vc2 = Children2ViewController()
         let vc3 = Children3ViewController()
@@ -71,30 +66,39 @@ extension ViewController {
         viewControllers.append(vc2)
         viewControllers.append(vc3)
         
+        /// 计算导航栏高度
+        var barHeight = UIApplication.shared.statusBarFrame.height
+        if let bar = navigationController?.navigationBar{
+            barHeight+=bar.frame.height
+        }
+        
         /// 添加分页控制器 
         hoverPageViewController = HoverPageViewController(viewControllers: viewControllers, headerView: headerView, pageTitleView: pageTitleView)
         hoverPageViewController.delegate = self
+        hoverPageViewController.view.frame = CGRect(x: 0, y: barHeight, width: view.frame.width, height: view.frame.height - barHeight)
         addChild(hoverPageViewController)
         view.addSubview(hoverPageViewController.view)
     }
 
     @objc func buttonClick(btn: UIButton) {
-        hoverPageViewController.selectedIndex = btn.tag
+        hoverPageViewController.move(to: btn.tag, animated: true)
     }
 }
 
 extension ViewController:HoverPageViewControllerDelegate{
     
-    func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll: UIScrollView) {
-        let progress = scrollViewDidScroll.contentOffset.x / scrollViewDidScroll.frame.width
+    func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll scrollView: UIScrollView) {
+        let progress = scrollView.contentOffset.x / scrollView.frame.width
         indicator.frame.origin.x = ((indicator.frame.width + (indicatorMargin * 2)) * progress) + indicatorMargin
     }
 }
+
 ```
 ### 子控制器
 ```swift
-class Children1ViewController: HoverContainerViewController {
+class Children1ViewController: HoverChildViewController {
 
+    private var tableView:UITableView!
     private lazy var items: [String] = {
         var items = [String]()
         for i in 0..<100 {
@@ -103,35 +107,31 @@ class Children1ViewController: HoverContainerViewController {
         return items
     }()
 
-    private lazy var tableView: UITableView = {
-        let inset = UIEdgeInsets(top: ViewController.headerViewHeight, left: 0, bottom: 0, right: 0)
-        let tableView = UITableView(frame: view.bounds, style: .plain)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "aaaa")
-        tableView.contentInsetAdjustmentBehavior = .never
-        tableView.bounces = false
-        tableView.contentInset = UIEdgeInsets(top: ViewController.headerViewHeight, left: 0, bottom: 0, right: 0)
-        tableView.scrollIndicatorInsets = tableView.contentInset
-        tableView.delegate = self
-        tableView.dataSource = self
-        return tableView
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.green
+        
+        tableView = UITableView(frame: view.bounds, style: .plain)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "aaaa")
+        tableView.delegate = self
+        tableView.dataSource = self
         view.addSubview(tableView)
-
     }
 
-    override var offsetY: CGFloat {
-        didSet {
-            tableView.contentOffset = CGPoint(x: 0, y: offsetY)
+    override var offsetY: CGFloat{
+        set{
+            tableView.contentOffset = CGPoint(x: 0, y: newValue)
+        }
+        get{
+            return tableView.contentOffset.y
         }
     }
-
-    override var isStopScroll: Bool {
-        didSet {
-            tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentOffset.y), animated: false)
+    
+    override var isCanScroll: Bool{
+        didSet{
+            if isCanScroll{
+                tableView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+            }
         }
     }
 }
@@ -152,10 +152,7 @@ extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: HoverPageViewController.HoverPageViewOffsetChange),
-                                        object: self,
-                                        userInfo: [HoverPageViewController.OffsetKey: scrollView.contentOffset])
-        offsetY = scrollView.contentOffset.y
+        scrollDelegate?.hoverChildViewController(self, scrollViewDidScroll: scrollView)
     }
 }
 ```

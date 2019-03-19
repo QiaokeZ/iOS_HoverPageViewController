@@ -8,8 +8,9 @@
 
 import UIKit
 
-class Children1ViewController: HoverContainerViewController {
+class Children1ViewController: HoverChildViewController {
 
+    private var tableView:UITableView!
     private lazy var items: [String] = {
         var items = [String]()
         for i in 0..<100 {
@@ -18,36 +19,30 @@ class Children1ViewController: HoverContainerViewController {
         return items
     }()
 
-    private lazy var tableView: UITableView = {
-        let inset = UIEdgeInsets(top: ViewController.headerViewHeight, left: 0, bottom: 0, right: 0)
-        let tableView = UITableView(frame: view.bounds, style: .plain)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "aaaa")
-        tableView.contentInsetAdjustmentBehavior = .never
-        tableView.bounces = false
-        tableView.contentInset = UIEdgeInsets(top: ViewController.headerViewHeight, left: 0, bottom: 0, right: 0)
-        tableView.scrollIndicatorInsets = tableView.contentInset
-        tableView.delegate = self
-        tableView.dataSource = self
-        return tableView
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        offsetY = -ViewController.headerViewHeight
         view.backgroundColor = UIColor.green
+        
+        tableView = UITableView(frame: view.bounds, style: .plain)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "aaaa")
+        tableView.delegate = self
+        tableView.dataSource = self
         view.addSubview(tableView)
     }
 
-    override var offsetY: CGFloat {
-        didSet {
-            tableView.contentOffset = CGPoint(x: 0, y: offsetY)
+    override var offsetY: CGFloat{
+        set{
+            tableView.contentOffset = CGPoint(x: 0, y: newValue)
+        }
+        get{
+            return tableView.contentOffset.y
         }
     }
-
-    override var isStopScroll: Bool {
-        didSet {
-            if isStopScroll == true{
-                tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentOffset.y), animated: false)
+    
+    override var isCanScroll: Bool{
+        didSet{
+            if isCanScroll{
+                tableView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             }
         }
     }
@@ -69,9 +64,6 @@ extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: HoverPageViewController.HoverPageViewOffsetChange),
-                                        object: self,
-                                        userInfo: [HoverPageViewController.OffsetKey: scrollView.contentOffset])
-        offsetY = scrollView.contentOffset.y
+        scrollDelegate?.hoverChildViewController(self, scrollViewDidScroll: scrollView)
     }
 }

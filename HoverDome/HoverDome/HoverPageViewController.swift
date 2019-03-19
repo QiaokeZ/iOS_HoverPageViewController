@@ -11,124 +11,137 @@
 
 import UIKit
 
-class HoverContainerViewController: UIViewController {
-
-    public var offsetY: CGFloat = 0.0
-    public var isStopScroll: Bool = false
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
+protocol HoverChildViewControllerDelegate: NSObjectProtocol {
+    func hoverChildViewController(_ viewController: HoverChildViewController, scrollViewDidScroll scrollView: UIScrollView)
 }
 
 protocol HoverPageViewControllerDelegate: NSObjectProtocol {
     func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll scrollView: UIScrollView)
 }
 
-final class HoverPageViewController: UIViewController {
+class HoverChildViewController: UIViewController{
+    public var offsetY: CGFloat = 0.0
+    public var isCanScroll: Bool = false
+    public weak var scrollDelegate:HoverChildViewControllerDelegate?
+}
 
-    static let HoverPageViewOffsetChange = "HoverPageViewOffsetChange"
-    static let OffsetKey = "OffsetKey"
+final class HoverPageScrollView: UIScrollView,UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
 
-    weak var delegate: HoverPageViewControllerDelegate?
+class HoverPageViewController: UIViewController {
     
-    private(set) var viewControllers = [HoverContainerViewController]()
+    weak var delegate:HoverPageViewControllerDelegate?
+    private(set) var viewControllers = [HoverChildViewController]()
     private(set) var headerView: UIView!
     private(set) var pageTitleView: UIView!
-    private var offset: CGPoint = .zero
-    private var scrollView: UIScrollView!
-
-    var selectedIndex: Int = 0 {
-        willSet {
-            if newValue != selectedIndex {
-                viewControllers[selectedIndex].isStopScroll = true
-                scrollView.setContentOffset(CGPoint(x: CGFloat(newValue) * view.frame.width, y: 0), animated: true)
-            }
+    private var mainScrollView: HoverPageScrollView!
+    private var pageScrollView: UIScrollView!
+    private var currentIndex:Int = 0
+    
+    func move(to:Int, animated:Bool){
+        viewControllers.forEach{$0.isCanScroll = true}
+        pageScrollView.setContentOffset(CGPoint(x: CGFloat(to) * view.frame.width, y: 0), animated: animated)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            self.scrollViewDidEndDecelerating(self.pageScrollView)
         }
     }
-
-    init(viewControllers: [HoverContainerViewController], selectedIndex: Int = 0, headerView: UIView, pageTitleView: UIView) {
+    
+    init(viewControllers: [HoverChildViewController],  headerView: UIView, pageTitleView: UIView) {
         super.init(nibName: nil, bundle: nil)
         self.viewControllers = viewControllers
-        self.selectedIndex = selectedIndex
         self.headerView = headerView
         self.pageTitleView = pageTitleView
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareView()
-
-        NotificationCenter.default.addObserver(self,
-            selector: #selector(HoverPageViewController.pageViewControllerOffsetYChange),
-            name: NSNotification.Name(rawValue: HoverPageViewController.HoverPageViewOffsetChange),
-            object: nil)
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        mainScrollView.frame = view.bounds
+        mainScrollView.contentSize = CGSize(width: 0, height: mainScrollView.frame.height + headerView.frame.height)
+        pageScrollView.frame.size = CGSize(width: view.frame.width, height: mainScrollView.contentSize.height - pageTitleView.frame.maxY)
+        pageScrollView.contentSize = CGSize(width: view.frame.width * CGFloat(viewControllers.count), height: 0)
     }
 }
 
-extension HoverPageViewController {
-
-    private func prepareView() {
-        scrollView = UIScrollView()
-        scrollView.frame.origin.y = pageTitleView.frame.height
-        scrollView.frame.size = CGSize(width: view.frame.width, height: view.frame.height - pageTitleView.frame.height)
-        scrollView.contentSize = CGSize(width: view.frame.width * CGFloat(viewControllers.count), height: 0)
-        scrollView.isPagingEnabled = true
-        scrollView.delegate = self
-
+extension HoverPageViewController{
+    
+    private func prepareView(){
+        mainScrollView = HoverPageScrollView()
+        mainScrollView.delegate = self
+        mainScrollView.bounces = false
+        mainScrollView.showsHorizontalScrollIndicator = false
+        view.addSubview(mainScrollView)
+        if #available(iOS 11.0, *) {
+            mainScrollView.contentInsetAdjustmentBehavior = .never
+        } else {
+            automaticallyAdjustsScrollViewInsets = false;
+        };
+        
+        pageTitleView.frame.origin.y = headerView.frame.height
+        mainScrollView.addSubview(headerView)
+        mainScrollView.addSubview(pageTitleView)
+        
+        pageScrollView = UIScrollView()
+        mainScrollView.showsVerticalScrollIndicator = false
+        pageScrollView.frame.origin.y = pageTitleView.frame.maxY
+        pageScrollView.isPagingEnabled = true
+        pageScrollView.delegate = self
+        mainScrollView.addSubview(pageScrollView)
         for i in 0..<viewControllers.count {
             let child = viewControllers[i]
+            child.scrollDelegate = self
             child.view.frame.origin.x = CGFloat(i) * view.frame.width
-            scrollView.addSubview(child.view)
+            pageScrollView.addSubview(child.view)
             addChild(child)
-        }
-
-        view.addSubview(scrollView)
-        view.addSubview(headerView)
-
-        offset = CGPoint(x: 0, y: -headerView.frame.height)
-        pageTitleView.frame.origin.y = headerView.frame.maxY
-        view.addSubview(pageTitleView)
-    }
-
-    @objc private func pageViewControllerOffsetYChange(notification: Notification) {
-        if let info = notification.userInfo,
-            let value = info[HoverPageViewController.OffsetKey] as? CGPoint {
-            offset.y = value.y
-            headerView.frame.origin.y = -(offset.y + headerView.frame.height)
-            if offset.y >= 0 {
-                pageTitleView.frame.origin.y = 0
-            } else {
-                pageTitleView.frame.origin.y = -offset.y
-            }
         }
     }
 }
 
-extension HoverPageViewController: UIScrollViewDelegate {
-
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        selectedIndex = Int(scrollView.contentOffset.x / scrollView.frame.width + 0.5) % viewControllers.count
+extension HoverPageViewController:HoverChildViewControllerDelegate{
+    
+    func hoverChildViewController(_ viewController: HoverChildViewController, scrollViewDidScroll scrollView: UIScrollView) {
+        if mainScrollView.contentOffset.y < headerView.frame.height, mainScrollView.contentOffset.y > 0{
+            let vc = viewControllers[currentIndex];
+            vc.offsetY = 0
+        }
     }
+}
 
+extension HoverPageViewController:UIScrollViewDelegate{
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        pageScrollView.isScrollEnabled = true
+        mainScrollView.isScrollEnabled = true
+        if scrollView == pageScrollView{
+            currentIndex = Int(scrollView.contentOffset.x / scrollView.frame.width + 0.5) % viewControllers.count
+        }
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        delegate?.hoverPageViewController(self, scrollViewDidScroll: scrollView)
-        for child in viewControllers {
-            if offset.y >= 0 {
-                if child.offsetY < 0 {
-                    child.offsetY = 0
-                }
-            } else {
-                child.offsetY = offset.y
+        if scrollView == mainScrollView{
+            pageScrollView.isScrollEnabled = false
+            let vc = viewControllers[currentIndex];
+            if vc.offsetY > 0 {
+                scrollView.contentOffset = CGPoint(x: 0, y: headerView.frame.height)
+            }else{
+                viewControllers.forEach{$0.offsetY = 0}
             }
+        }
+        if scrollView == pageScrollView{
+            mainScrollView.isScrollEnabled = false
+            delegate?.hoverPageViewController(self, scrollViewDidScroll: scrollView)
         }
     }
 }

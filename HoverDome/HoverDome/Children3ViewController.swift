@@ -8,8 +8,9 @@
 
 import UIKit
 
-class Children3ViewController: HoverContainerViewController {
+class Children3ViewController: HoverChildViewController {
 
+    private var collectionView:UICollectionView!
     private lazy var items: [String] = {
         var items = [String]()
         for i in 0..<100 {
@@ -18,40 +19,36 @@ class Children3ViewController: HoverContainerViewController {
         return items
     }()
 
-    private lazy var collectionView: UICollectionView = {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.yellow
+        
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 100, height: 100)
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 5
-
-        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+        
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "aaa")
-        collectionView.bounces = false
-        collectionView.contentInset = UIEdgeInsets(top: ViewController.headerViewHeight, left: 0, bottom: 0, right: 0)
-        collectionView.scrollIndicatorInsets = collectionView.contentInset
         collectionView.dataSource = self
         collectionView.delegate = self
-        return collectionView
-    }()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        offsetY = -ViewController.headerViewHeight
-        view.backgroundColor = UIColor.yellow
         view.addSubview(collectionView)
     }
 
-    override var offsetY: CGFloat {
-        didSet {
-            collectionView.contentOffset = CGPoint(x: 0, y: offsetY)
+    override var offsetY: CGFloat{
+        set{
+            collectionView.contentOffset = CGPoint(x: 0, y: newValue)
+        }
+        get{
+            return collectionView.contentOffset.y
         }
     }
-
-    override var isStopScroll: Bool {
-        didSet {
-            if isStopScroll == true{
-                collectionView.setContentOffset(CGPoint(x: 0, y: collectionView.contentOffset.y), animated: false)
+    
+    override var isCanScroll: Bool{
+        didSet{
+            if isCanScroll{
+                collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             }
         }
     }
@@ -70,7 +67,6 @@ extension Children3ViewController: UICollectionViewDataSource, UICollectionViewD
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: HoverPageViewController.HoverPageViewOffsetChange), object: self, userInfo: [HoverPageViewController.OffsetKey: scrollView.contentOffset])
-        offsetY = scrollView.contentOffset.y
+        scrollDelegate?.hoverChildViewController(self, scrollViewDidScroll: scrollView)
     }
 }

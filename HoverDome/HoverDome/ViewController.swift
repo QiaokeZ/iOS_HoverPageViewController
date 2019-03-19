@@ -83,7 +83,7 @@ extension ViewController {
     }
 
     @objc func buttonClick(btn: UIButton) {
-        hoverPageViewController.move(to: btn.tag, animated: false)
+        hoverPageViewController.move(to: btn.tag, animated: true)
     }
 }
 
@@ -92,7 +92,6 @@ extension ViewController:HoverPageViewControllerDelegate{
     func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll scrollView: UIScrollView) {
         let progress = scrollView.contentOffset.x / scrollView.frame.width
         indicator.frame.origin.x = ((indicator.frame.width + (indicatorMargin * 2)) * progress) + indicatorMargin
-
     }
 }
 

@@ -2,7 +2,7 @@
 ### 简书(https://www.jianshu.com/p/ae1b84b107ea)
 
 
- ![image](https://github.com/QiaokeZ/iOS_HoverPageViewController/blob/master/HoverDome/HoverDome/hover.gif)
+ ![image](https://github.com/QiaokeZ/iOS_HoverPageViewController/blob/master/HoverDome_Swift/HoverDome/hover.gif)
 
 ### 主控制器
 ```swift

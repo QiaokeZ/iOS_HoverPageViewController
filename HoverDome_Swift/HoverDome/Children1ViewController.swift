@@ -54,7 +54,7 @@ extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "aaaa", for: indexPath)
+           let cell = tableView.dequeueReusableCell(withIdentifier: "aaaa", for: indexPath)
         cell.textLabel?.text = items[indexPath.row]
         return cell
     }

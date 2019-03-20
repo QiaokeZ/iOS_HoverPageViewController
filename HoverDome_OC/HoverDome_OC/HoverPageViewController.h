@@ -10,11 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface HoverChildViewController : UIViewController
+
+@end
+
 @interface HoverPageViewController : UIViewController
 
-- (instancetype)initWithViewControllers:(NSArray *)viewControllers headerView:(UIView *)headerView pageTitleView:(UIView *)pageTitleView;
+- (instancetype)initWithViewControllers:(NSArray<HoverChildViewController *> *)viewControllers headerView:(UIView *)headerView pageTitleView:(UIView *)pageTitleView;
 
-@property(nonatomic, strong, readonly) NSArray *viewControllers;
+@property(nonatomic, strong, readonly) NSArray<HoverChildViewController *> *viewControllers;
 @property(nonatomic, strong, readonly) UIView *headerView;
 @property(nonatomic, strong, readonly) UIView *pageTitleView;
 

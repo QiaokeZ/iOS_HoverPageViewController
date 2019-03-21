@@ -1,9 +1,12 @@
 //
 //  HoverPageViewController.m
-//  HoverDome_OC
+//  HoverPageViewController <https://github.com/QiaokeZ/iOS_HoverPageViewController>
 //
-//  Created by admin on 2019/3/20.
-//  Copyright © 2019 com.etraffic.EasyCharging. All rights reserved.
+//  Created by admin on 2019/2/27
+//  Copyright © 2019 zhouqiao. All rights reserved.
+//
+//  This source code is licensed under the MIT-style license found in the
+//  LICENSE file in the root directory of this source tree.
 //
 
 #import "HoverPageViewController.h"
@@ -12,18 +15,20 @@
 @end
 
 @interface HoverPageScrollView : UIScrollView<UIGestureRecognizerDelegate>
-
 @end
 
 @implementation HoverPageScrollView
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+- (BOOL)touchesShouldCancelInContentView:(UIView *)view{
     return YES;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+    return YES;
+}
 @end
 
-@interface HoverPageViewController ()
+@interface HoverPageViewController ()<UIScrollViewDelegate,HoverChildViewControllerDelegate>
 @property(nonatomic, strong) HoverPageScrollView *mainScrollView;
 @property(nonatomic, strong) UIScrollView *pageScrollView;
 @end
@@ -33,7 +38,7 @@
 - (instancetype)initWithViewControllers:(NSArray *)viewControllers
                              headerView:(UIView *)headerView
                           pageTitleView:(UIView *)pageTitleView{
-    if (self =  [super initWithNibName:nil bundle:nil]){
+    if (self = [super initWithNibName:nil bundle:nil]){
         _viewControllers = viewControllers;
         _headerView = headerView;
         _pageTitleView = pageTitleView;
@@ -41,13 +46,21 @@
     return self;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
++ (instancetype)viewControllers:(NSArray<HoverChildViewController *> *)viewControllers
+                     headerView:(UIView *)headerView
+                  pageTitleView:(UIView *)pageTitleView{
+    return [[HoverPageViewController alloc]initWithViewControllers:viewControllers headerView:headerView pageTitleView:pageTitleView];
 }
 
-- (void)prepareVie{
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self prepareView];
+}
+
+- (void)prepareView{
     self.mainScrollView = [[HoverPageScrollView alloc]init];
     self.mainScrollView.bounces = NO;
+    self.mainScrollView.delegate = self;
     self.mainScrollView.showsVerticalScrollIndicator = NO;
     [self.view addSubview:self.mainScrollView];
     [self.mainScrollView addSubview:_headerView];
@@ -55,6 +68,7 @@
     
     self.pageScrollView = [[UIScrollView alloc]init];
     self.pageScrollView.pagingEnabled = YES;
+    self.pageScrollView.delegate = self;
     self.pageScrollView.showsHorizontalScrollIndicator = NO;
     [self.mainScrollView addSubview:self.pageScrollView];
     for (HoverPageViewController *vc in self.viewControllers) {
@@ -76,8 +90,53 @@
     self.pageScrollView.frame = CGRectMake(0, CGRectGetMaxY(_pageTitleView.frame), self.view.frame.size.width, self.mainScrollView.contentSize.height - CGRectGetMaxY(_pageTitleView.frame));
     self.pageScrollView.contentSize = CGSizeMake(self.view.frame.size.width * _viewControllers.count, 0);
     for (NSInteger i = 0; i < _viewControllers.count; i++) {
-        HoverChildViewController *vc = [_viewControllers objectAtIndex:i];
-        vc.view.frame = CGRectMake(i * self.view.frame.size.width, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)
+        HoverChildViewController *child = [_viewControllers objectAtIndex:i];
+        child.scrollDelegate = self;
+        child.view.frame = CGRectMake(i * self.view.frame.size.width, child.view.frame.origin.y, child.view.frame.size.width, child.view.frame.size.height);
+    }
+}
+
+- (void)moveToAtIndex:(NSInteger)index animated:(BOOL)animated{
+    for (HoverChildViewController *child in _viewControllers) {
+        child.isCanScroll = YES;
+    }
+    [self.pageScrollView setContentOffset:CGPointMake(index * self.view.frame.size.width, 0) animated:animated];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self scrollViewDidEndDecelerating:self.pageScrollView];
+    });
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (scrollView == self.mainScrollView){
+        self.pageScrollView.scrollEnabled = NO;
+        HoverChildViewController *child = [_viewControllers objectAtIndex:_currentIndex];
+        if (child.offsetY > 0){
+            scrollView.contentOffset = CGPointMake(0, self.headerView.frame.size.height);
+        }else{
+            for (HoverChildViewController *child in _viewControllers) {
+                child.offsetY = 0;
+            }
+        }
+    }else if (scrollView == self.pageScrollView){
+        self.mainScrollView.scrollEnabled = NO;
+        if ([self.delegate respondsToSelector:@selector(hoverPageViewController:scrollViewDidScroll:)]){
+            [self.delegate hoverPageViewController:self scrollViewDidScroll:scrollView];
+        }
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    self.pageScrollView.scrollEnabled = YES;
+    self.mainScrollView.scrollEnabled = YES;
+    if (scrollView == self.pageScrollView){
+        _currentIndex = (NSUInteger)(scrollView.contentOffset.x / scrollView.frame.size.width + 0.5) % _viewControllers.count;
+    }
+}
+
+- (void)hoverChildViewController:(HoverChildViewController *)ViewController scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (self.mainScrollView.contentOffset.y < self.headerView.frame.size.height && self.mainScrollView.contentOffset.y > 0){
+        HoverChildViewController *child = [_viewControllers objectAtIndex:_currentIndex];
+        child.offsetY = 0;
     }
 }
 

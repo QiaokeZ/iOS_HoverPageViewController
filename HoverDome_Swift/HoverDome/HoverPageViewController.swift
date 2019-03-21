@@ -37,9 +37,9 @@ class HoverPageViewController: UIViewController {
     private(set) var viewControllers = [HoverChildViewController]()
     private(set) var headerView: UIView!
     private(set) var pageTitleView: UIView!
+    private(set) var currentIndex: Int = 0
     private var mainScrollView: HoverPageScrollView!
     private var pageScrollView: UIScrollView!
-    private var currentIndex: Int = 0
 
     func move(to: Int, animated: Bool) {
         viewControllers.forEach { $0.isCanScroll = true }
@@ -114,8 +114,8 @@ extension HoverPageViewController: HoverChildViewControllerDelegate {
 
     func hoverChildViewController(_ viewController: HoverChildViewController, scrollViewDidScroll scrollView: UIScrollView) {
         if mainScrollView.contentOffset.y < headerView.frame.height, mainScrollView.contentOffset.y > 0 {
-            let vc = viewControllers[currentIndex];
-            vc.offsetY = 0
+            let child = viewControllers[currentIndex];
+            child.offsetY = 0
         }
     }
 }
@@ -133,14 +133,13 @@ extension HoverPageViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == mainScrollView {
             pageScrollView.isScrollEnabled = false
-            let vc = viewControllers[currentIndex];
-            if vc.offsetY > 0 {
+            let child = viewControllers[currentIndex];
+            if child.offsetY > 0 {
                 scrollView.contentOffset = CGPoint(x: 0, y: headerView.frame.height)
             } else {
                 viewControllers.forEach { $0.offsetY = 0 }
             }
-        }
-        if scrollView == pageScrollView {
+        } else if scrollView == pageScrollView {
             mainScrollView.isScrollEnabled = false
             delegate?.hoverPageViewController(self, scrollViewDidScroll: scrollView)
         }

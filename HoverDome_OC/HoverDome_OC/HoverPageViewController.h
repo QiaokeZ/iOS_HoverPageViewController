@@ -1,26 +1,52 @@
 //
 //  HoverPageViewController.h
-//  HoverDome_OC
+//  HoverPageViewController <https://github.com/QiaokeZ/iOS_HoverPageViewController>
 //
-//  Created by admin on 2019/3/20.
-//  Copyright © 2019 com.etraffic.EasyCharging. All rights reserved.
+//  Created by admin on 2019/2/27
+//  Copyright © 2019 zhouqiao. All rights reserved.
+//
+//  This source code is licensed under the MIT-style license found in the
+//  LICENSE file in the root directory of this source tree.
 //
 
 #import <UIKit/UIKit.h>
+@class HoverChildViewController;
+@class HoverPageViewController;
 
 NS_ASSUME_NONNULL_BEGIN
+@protocol HoverChildViewControllerDelegate <NSObject>
+@optional
+- (void)hoverChildViewController:(HoverChildViewController *)ViewController scrollViewDidScroll:(UIScrollView *)scrollView;
+@end
+
+@protocol HoverPageViewControllerDelegate <NSObject>
+@optional
+- (void)hoverPageViewController:(HoverPageViewController *)ViewController scrollViewDidScroll:(UIScrollView *)scrollView;
+@end
 
 @interface HoverChildViewController : UIViewController
-
+@property(nonatomic, assign) CGFloat offsetY;
+@property(nonatomic, assign) BOOL isCanScroll;
+@property(nonatomic, weak) id<HoverChildViewControllerDelegate> scrollDelegate;
 @end
 
 @interface HoverPageViewController : UIViewController
 
-- (instancetype)initWithViewControllers:(NSArray<HoverChildViewController *> *)viewControllers headerView:(UIView *)headerView pageTitleView:(UIView *)pageTitleView;
+- (instancetype)initWithViewControllers:(NSArray<HoverChildViewController *> *)viewControllers
+                             headerView:(UIView *)headerView
+                          pageTitleView:(UIView *)pageTitleView;
+
++ (instancetype)viewControllers:(NSArray<HoverChildViewController *> *)viewControllers
+                     headerView:(UIView *)headerView
+                  pageTitleView:(UIView *)pageTitleView;
 
 @property(nonatomic, strong, readonly) NSArray<HoverChildViewController *> *viewControllers;
 @property(nonatomic, strong, readonly) UIView *headerView;
 @property(nonatomic, strong, readonly) UIView *pageTitleView;
+@property(nonatomic, assign, readonly) NSUInteger currentIndex;
+@property(nonatomic, weak) id<HoverPageViewControllerDelegate> delegate;
+
+- (void)moveToAtIndex:(NSInteger)index animated:(BOOL)animated;
 
 @end
 

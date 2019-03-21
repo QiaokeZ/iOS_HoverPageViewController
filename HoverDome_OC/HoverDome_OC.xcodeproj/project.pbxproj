@@ -14,6 +14,9 @@
 		84C7C80122414EBA00A33B22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84C7C7FF22414EBA00A33B22 /* LaunchScreen.storyboard */; };
 		84C7C80422414EBA00A33B22 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C80322414EBA00A33B22 /* main.m */; };
 		84C7C80C22414F0700A33B22 /* HoverPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C80B22414F0700A33B22 /* HoverPageViewController.m */; };
+		84C7C80F2243E8B300A33B22 /* Children1ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C80E2243E8B300A33B22 /* Children1ViewController.m */; };
+		84C7C8122243E8C600A33B22 /* Children2ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C8112243E8C600A33B22 /* Children2ViewController.m */; };
+		84C7C8152243E8D800A33B22 /* Children3ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C8142243E8D800A33B22 /* Children3ViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +32,12 @@
 		84C7C80322414EBA00A33B22 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		84C7C80A22414F0700A33B22 /* HoverPageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HoverPageViewController.h; sourceTree = "<group>"; };
 		84C7C80B22414F0700A33B22 /* HoverPageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HoverPageViewController.m; sourceTree = "<group>"; };
+		84C7C80D2243E8B300A33B22 /* Children1ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Children1ViewController.h; sourceTree = "<group>"; };
+		84C7C80E2243E8B300A33B22 /* Children1ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Children1ViewController.m; sourceTree = "<group>"; };
+		84C7C8102243E8C600A33B22 /* Children2ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Children2ViewController.h; sourceTree = "<group>"; };
+		84C7C8112243E8C600A33B22 /* Children2ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Children2ViewController.m; sourceTree = "<group>"; };
+		84C7C8132243E8D800A33B22 /* Children3ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Children3ViewController.h; sourceTree = "<group>"; };
+		84C7C8142243E8D800A33B22 /* Children3ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Children3ViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,8 +72,14 @@
 			children = (
 				84C7C7F422414EB900A33B22 /* AppDelegate.h */,
 				84C7C7F522414EB900A33B22 /* AppDelegate.m */,
-				84C7C7F722414EB900A33B22 /* ViewController.h */,
 				84C7C7F822414EB900A33B22 /* ViewController.m */,
+				84C7C7F722414EB900A33B22 /* ViewController.h */,
+				84C7C80D2243E8B300A33B22 /* Children1ViewController.h */,
+				84C7C80E2243E8B300A33B22 /* Children1ViewController.m */,
+				84C7C8102243E8C600A33B22 /* Children2ViewController.h */,
+				84C7C8112243E8C600A33B22 /* Children2ViewController.m */,
+				84C7C8132243E8D800A33B22 /* Children3ViewController.h */,
+				84C7C8142243E8D800A33B22 /* Children3ViewController.m */,
 				84C7C80A22414F0700A33B22 /* HoverPageViewController.h */,
 				84C7C80B22414F0700A33B22 /* HoverPageViewController.m */,
 				84C7C7FA22414EB900A33B22 /* Main.storyboard */,
@@ -146,10 +161,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84C7C8122243E8C600A33B22 /* Children2ViewController.m in Sources */,
 				84C7C80C22414F0700A33B22 /* HoverPageViewController.m in Sources */,
 				84C7C7F922414EB900A33B22 /* ViewController.m in Sources */,
+				84C7C80F2243E8B300A33B22 /* Children1ViewController.m in Sources */,
 				84C7C80422414EBA00A33B22 /* main.m in Sources */,
 				84C7C7F622414EB900A33B22 /* AppDelegate.m in Sources */,
+				84C7C8152243E8D800A33B22 /* Children3ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,9 +316,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.etraffic.HoverDome-OC";
+				PRODUCT_BUNDLE_IDENTIFIER = "HoverDome-OC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -315,9 +333,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.etraffic.HoverDome-OC";
+				PRODUCT_BUNDLE_IDENTIFIER = "HoverDome-OC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

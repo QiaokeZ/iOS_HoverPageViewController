@@ -26,6 +26,10 @@ class HoverChildViewController: UIViewController {
 }
 
 final class HoverPageScrollView: UIScrollView, UIGestureRecognizerDelegate {
+    override func touchesShouldCancel(in view: UIView) -> Bool {
+        return true
+    }
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }

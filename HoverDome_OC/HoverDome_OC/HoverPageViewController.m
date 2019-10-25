@@ -106,6 +106,19 @@
     });
 }
 
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+     self.pageScrollView.scrollEnabled = YES;
+     self.mainScrollView.scrollEnabled = YES;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    self.pageScrollView.scrollEnabled = YES;
+    self.mainScrollView.scrollEnabled = YES;
+    if (scrollView == self.pageScrollView){
+        _currentIndex = (NSUInteger)(scrollView.contentOffset.x / scrollView.frame.size.width + 0.5) % _viewControllers.count;
+    }
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     if (scrollView == self.mainScrollView){
         self.pageScrollView.scrollEnabled = NO;
@@ -122,14 +135,6 @@
         if ([self.delegate respondsToSelector:@selector(hoverPageViewController:scrollViewDidScroll:)]){
             [self.delegate hoverPageViewController:self scrollViewDidScroll:scrollView];
         }
-    }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
-    self.pageScrollView.scrollEnabled = YES;
-    self.mainScrollView.scrollEnabled = YES;
-    if (scrollView == self.pageScrollView){
-        _currentIndex = (NSUInteger)(scrollView.contentOffset.x / scrollView.frame.size.width + 0.5) % _viewControllers.count;
     }
 }
 

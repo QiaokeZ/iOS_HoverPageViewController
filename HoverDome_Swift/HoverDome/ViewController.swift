@@ -25,12 +25,18 @@ class ViewController: UIViewController {
 extension ViewController {
 
     private func prepareView() {
-        let headerView = UILabel()
-        headerView.frame.size = CGSize(width: view.frame.width, height: 200)
-        headerView.backgroundColor = UIColor.red
-        headerView.text = "可上下滑动头部"
-        headerView.textColor = UIColor.white
-        headerView.textAlignment = .center
+        let headerView = UIScrollView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 200))
+        headerView.contentSize = CGSize(width: view.frame.width * 4, height: 0)
+        headerView.isPagingEnabled = true
+        
+        for i in 0..<4{
+            let v = UILabel()
+            v.text = "scrollView"
+            v.textAlignment = .center
+            v.backgroundColor = UIColor.random
+            v.frame = CGRect(origin: CGPoint(x: CGFloat(i) * headerView.frame.width, y: 0), size: headerView.frame.size)
+            headerView.addSubview(v)
+        }
         
         /// 指示器
         let pageTitleView = UIView()
@@ -92,6 +98,23 @@ extension ViewController:HoverPageViewControllerDelegate{
     func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll scrollView: UIScrollView) {
         let progress = scrollView.contentOffset.x / scrollView.frame.width
         indicator.frame.origin.x = ((indicator.frame.width + (indicatorMargin * 2)) * progress) + indicatorMargin
+    }
+    
+    func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidEndDecelerating scrollView: UIScrollView)
+    {
+        
+    }
+    
+}
+
+
+extension UIColor {
+
+    static var random: UIColor {
+        let red = CGFloat(arc4random() % 256) / 255.0
+        let green = CGFloat(arc4random() % 256) / 255.0
+        let blue = CGFloat(arc4random() % 256) / 255.0
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
 }
 

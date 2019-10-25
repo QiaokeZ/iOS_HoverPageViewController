@@ -17,41 +17,48 @@ protocol HoverChildViewControllerDelegate: NSObjectProtocol {
 
 protocol HoverPageViewControllerDelegate: NSObjectProtocol {
     func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidScroll scrollView: UIScrollView)
+    func hoverPageViewController(_ viewController: HoverPageViewController, scrollViewDidEndDecelerating scrollView: UIScrollView)
 }
 
 class HoverChildViewController: UIViewController {
+
     public var offsetY: CGFloat = 0.0
     public var isCanScroll: Bool = false
     public weak var scrollDelegate: HoverChildViewControllerDelegate?
+    public func getScrollView () -> UIScrollView? {
+        return nil
+    }
 }
 
-final class HoverPageScrollView: UIScrollView, UIGestureRecognizerDelegate {
+class HoverPageScrollView: UIScrollView, UIGestureRecognizerDelegate {
+
+    public var scrollViewWhites: Set<UIScrollView>?
+    
     override func touchesShouldCancel(in view: UIView) -> Bool {
         return true
     }
-    
+
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
+        guard let scrollViewWhites = scrollViewWhites else { return true }
+        for item in scrollViewWhites {
+            if let view = otherGestureRecognizer.view, view == item {
+                return true
+            }
+        }
+        return false
     }
 }
 
 class HoverPageViewController: UIViewController {
 
     weak var delegate: HoverPageViewControllerDelegate?
+
     private(set) var viewControllers = [HoverChildViewController]()
     private(set) var headerView: UIView!
     private(set) var pageTitleView: UIView!
     private(set) var currentIndex: Int = 0
     private var mainScrollView: HoverPageScrollView!
     private var pageScrollView: UIScrollView!
-
-    func move(to: Int, animated: Bool) {
-        viewControllers.forEach { $0.isCanScroll = true }
-        pageScrollView.setContentOffset(CGPoint(x: CGFloat(to) * view.frame.width, y: 0), animated: animated)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
-            self.scrollViewDidEndDecelerating(self.pageScrollView)
-        }
-    }
 
     init(viewControllers: [HoverChildViewController], headerView: UIView, pageTitleView: UIView) {
         super.init(nibName: nil, bundle: nil)
@@ -60,14 +67,23 @@ class HoverPageViewController: UIViewController {
         self.pageTitleView = pageTitleView
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
+    public func move(to: Int, animated: Bool) {
+        view.isUserInteractionEnabled = false
+        viewControllers.forEach { $0.isCanScroll = true }
+        pageScrollView.setContentOffset(CGPoint(x: CGFloat(to) * view.frame.width, y: 0), animated: animated)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            self.scrollViewDidEndDecelerating(self.pageScrollView)
+            self.view.isUserInteractionEnabled = true
+        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareView()
-
     }
 
     override func viewDidLayoutSubviews() {
@@ -78,10 +94,15 @@ class HoverPageViewController: UIViewController {
         pageScrollView.frame.origin.y = pageTitleView.frame.maxY
         pageScrollView.frame.size = CGSize(width: view.frame.width, height: mainScrollView.contentSize.height - pageTitleView.frame.maxY)
         pageScrollView.contentSize = CGSize(width: view.frame.width * CGFloat(viewControllers.count), height: 0)
+        var scrollViews = Set<UIScrollView>()
         for i in 0..<viewControllers.count {
             let child = viewControllers[i]
             child.view.frame.origin.x = CGFloat(i) * view.frame.width
+            if let scrollView = child.getScrollView() {
+                scrollViews.insert(scrollView)
+            }
         }
+        mainScrollView.scrollViewWhites = scrollViews
     }
 }
 
@@ -110,7 +131,7 @@ extension HoverPageViewController {
             mainScrollView.contentInsetAdjustmentBehavior = .never
         } else {
             automaticallyAdjustsScrollViewInsets = false;
-        };
+        }
     }
 }
 
@@ -126,11 +147,17 @@ extension HoverPageViewController: HoverChildViewControllerDelegate {
 
 extension HoverPageViewController: UIScrollViewDelegate {
 
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        pageScrollView.isScrollEnabled = true
+        mainScrollView.isScrollEnabled = true
+    }
+
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         pageScrollView.isScrollEnabled = true
         mainScrollView.isScrollEnabled = true
+        currentIndex = Int(pageScrollView.contentOffset.x / pageScrollView.frame.width + 0.5) % viewControllers.count
         if scrollView == pageScrollView {
-            currentIndex = Int(scrollView.contentOffset.x / scrollView.frame.width + 0.5) % viewControllers.count
+            delegate?.hoverPageViewController(self, scrollViewDidEndDecelerating: scrollView)
         }
     }
 
@@ -149,4 +176,3 @@ extension HoverPageViewController: UIScrollViewDelegate {
         }
     }
 }
-

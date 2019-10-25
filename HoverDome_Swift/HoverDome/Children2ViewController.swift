@@ -46,6 +46,10 @@ class Children2ViewController: HoverChildViewController {
             }
         }
     }
+    
+    override func getScrollView() -> UIScrollView? {
+        return tableView
+    }
 }
 
 extension Children2ViewController: UITableViewDataSource, UITableViewDelegate {

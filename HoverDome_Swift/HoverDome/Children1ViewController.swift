@@ -46,6 +46,10 @@ class Children1ViewController: HoverChildViewController {
             }
         }
     }
+
+    override func getScrollView() -> UIScrollView? {
+        return tableView
+    }
 }
 
 extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {

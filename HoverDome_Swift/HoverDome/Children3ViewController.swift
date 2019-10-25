@@ -52,6 +52,10 @@ class Children3ViewController: HoverChildViewController {
             }
         }
     }
+    
+    override func getScrollView() -> UIScrollView? {
+        return collectionView
+    }
 }
 
 extension Children3ViewController: UICollectionViewDataSource, UICollectionViewDelegate {

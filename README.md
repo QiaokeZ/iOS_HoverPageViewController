@@ -116,6 +116,7 @@ class Children1ViewController: HoverChildViewController {
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
+        scrollView = tableView
     }
 
     override var offsetY: CGFloat{

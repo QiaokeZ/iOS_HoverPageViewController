@@ -22,12 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol HoverPageViewControllerDelegate <NSObject>
 @optional
 - (void)hoverPageViewController:(HoverPageViewController *)ViewController scrollViewDidScroll:(UIScrollView *)scrollView;
+- (void)hoverPageViewController:(HoverPageViewController *)ViewController scrollViewDidEndDecelerating:(UIScrollView *)scrollView;
 @end
 
 @interface HoverChildViewController : UIViewController
 @property(nonatomic, assign) CGFloat offsetY;
 @property(nonatomic, assign) BOOL isCanScroll;
 @property(nonatomic, weak) id<HoverChildViewControllerDelegate> scrollDelegate;
+@property(nonatomic, strong) UIScrollView *scrollView;
 @end
 
 @interface HoverPageViewController : UIViewController

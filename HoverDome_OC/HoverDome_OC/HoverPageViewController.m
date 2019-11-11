@@ -12,9 +12,11 @@
 #import "HoverPageViewController.h"
 
 @implementation HoverChildViewController
+
 @end
 
 @interface HoverPageScrollView : UIScrollView<UIGestureRecognizerDelegate>
+@property(nonatomic, strong) NSArray *scrollViewWhites;
 @end
 
 @implementation HoverPageScrollView
@@ -24,7 +26,13 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
-    return YES;
+    if (self.scrollViewWhites == nil) return YES;
+    for (UIScrollView *item in self.scrollViewWhites) {
+        if (otherGestureRecognizer.view == item){
+            return YES;
+        }
+    }
+    return NO;
 }
 @end
 
@@ -89,11 +97,17 @@
     _pageTitleView.frame = CGRectMake(0, CGRectGetMaxY(_headerView.frame),  _pageTitleView.frame.size.width,  _pageTitleView.frame.size.height);
     self.pageScrollView.frame = CGRectMake(0, CGRectGetMaxY(_pageTitleView.frame), self.view.frame.size.width, self.mainScrollView.contentSize.height - CGRectGetMaxY(_pageTitleView.frame));
     self.pageScrollView.contentSize = CGSizeMake(self.view.frame.size.width * _viewControllers.count, 0);
+    NSMutableArray *scrollViews = [NSMutableArray array];
     for (NSInteger i = 0; i < _viewControllers.count; i++) {
         HoverChildViewController *child = [_viewControllers objectAtIndex:i];
         child.scrollDelegate = self;
         child.view.frame = CGRectMake(i * self.view.frame.size.width, child.view.frame.origin.y, child.view.frame.size.width, child.view.frame.size.height);
+        if (child.scrollView != nil){
+            [scrollViews addObject:child.scrollView];
+            child.scrollView.frame = CGRectMake(child.scrollView.frame.origin.x, child.scrollView.frame.origin.y, child.scrollView.frame.size.width, self.pageScrollView.frame.size.height);
+        }
     }
+    self.mainScrollView.scrollViewWhites = scrollViews;
 }
 
 - (void)moveToAtIndex:(NSInteger)index animated:(BOOL)animated{
@@ -116,6 +130,9 @@
     self.mainScrollView.scrollEnabled = YES;
     if (scrollView == self.pageScrollView){
         _currentIndex = (NSUInteger)(scrollView.contentOffset.x / scrollView.frame.size.width + 0.5) % _viewControllers.count;
+        if ([self.delegate respondsToSelector:@selector(hoverPageViewController:scrollViewDidEndDecelerating:)]){
+            [self.delegate hoverPageViewController:self scrollViewDidEndDecelerating:scrollView];
+        }
     }
 }
 

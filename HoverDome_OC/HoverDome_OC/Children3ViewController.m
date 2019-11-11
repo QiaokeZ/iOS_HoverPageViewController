@@ -35,6 +35,7 @@
     [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"123"];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
+    self.scrollView = _collectionView;
     [self.view addSubview:_collectionView];
 }
 

@@ -29,6 +29,7 @@
     [_tableView registerClass: [UITableViewCell class] forCellReuseIdentifier:@"123"];
     _tableView.dataSource = self;
     _tableView.delegate = self;
+    self.scrollView = _tableView;
     [self.view addSubview:_tableView];
 }
 

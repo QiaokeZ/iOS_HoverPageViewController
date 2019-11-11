@@ -25,9 +25,7 @@ class HoverChildViewController: UIViewController {
     public var offsetY: CGFloat = 0.0
     public var isCanScroll: Bool = false
     public weak var scrollDelegate: HoverChildViewControllerDelegate?
-    public func getScrollView () -> UIScrollView? {
-        return nil
-    }
+    public var scrollView:UIScrollView?
 }
 
 class HoverPageScrollView: UIScrollView, UIGestureRecognizerDelegate {
@@ -98,8 +96,9 @@ class HoverPageViewController: UIViewController {
         for i in 0..<viewControllers.count {
             let child = viewControllers[i]
             child.view.frame.origin.x = CGFloat(i) * view.frame.width
-            if let scrollView = child.getScrollView() {
+            if let scrollView = child.scrollView {
                 scrollViews.insert(scrollView)
+                scrollView.frame.size.height = pageScrollView.frame.height
             }
         }
         mainScrollView.scrollViewWhites = scrollViews
@@ -155,8 +154,8 @@ extension HoverPageViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         pageScrollView.isScrollEnabled = true
         mainScrollView.isScrollEnabled = true
-        currentIndex = Int(pageScrollView.contentOffset.x / pageScrollView.frame.width + 0.5) % viewControllers.count
         if scrollView == pageScrollView {
+            currentIndex = Int(pageScrollView.contentOffset.x / pageScrollView.frame.width + 0.5) % viewControllers.count
             delegate?.hoverPageViewController(self, scrollViewDidEndDecelerating: scrollView)
         }
     }

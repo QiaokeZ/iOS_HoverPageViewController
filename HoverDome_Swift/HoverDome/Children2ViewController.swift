@@ -28,6 +28,7 @@ class Children2ViewController: HoverChildViewController {
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
+        scrollView = tableView
     }
     
     override var offsetY: CGFloat{
@@ -45,10 +46,6 @@ class Children2ViewController: HoverChildViewController {
                 tableView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             }
         }
-    }
-    
-    override func getScrollView() -> UIScrollView? {
-        return tableView
     }
 }
 

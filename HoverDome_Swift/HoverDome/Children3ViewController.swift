@@ -34,6 +34,7 @@ class Children3ViewController: HoverChildViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         view.addSubview(collectionView)
+        scrollView = collectionView
     }
 
     override var offsetY: CGFloat{
@@ -51,10 +52,6 @@ class Children3ViewController: HoverChildViewController {
                 collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             }
         }
-    }
-    
-    override func getScrollView() -> UIScrollView? {
-        return collectionView
     }
 }
 

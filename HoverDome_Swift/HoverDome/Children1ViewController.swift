@@ -28,6 +28,7 @@ class Children1ViewController: HoverChildViewController {
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
+        scrollView = tableView
     }
 
     override var offsetY: CGFloat{
@@ -46,10 +47,6 @@ class Children1ViewController: HoverChildViewController {
             }
         }
     }
-
-    override func getScrollView() -> UIScrollView? {
-        return tableView
-    }
 }
 
 extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -58,7 +55,7 @@ extension Children1ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-           let cell = tableView.dequeueReusableCell(withIdentifier: "aaaa", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "aaaa", for: indexPath)
         cell.textLabel?.text = items[indexPath.row]
         return cell
     }
